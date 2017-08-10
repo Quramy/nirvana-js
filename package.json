@@ -1,0 +1,30 @@
+{
+  "name": "electron-fate",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "bin": {
+    "electron-fate": "bin/cli.js",
+    "fatron": "bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w"
+  },
+  "author": "quramy",
+  "license": "MIT",
+  "peerDependencies": {
+    "electron": "^1.7.5"
+  },
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "yargs": "^8.0.2"
+  },
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/node": "^8.0.20",
+    "@types/yargs": "^8.0.2",
+    "electron": "^1.7.5",
+    "typescript": "2.3.4"
+  }
+}
