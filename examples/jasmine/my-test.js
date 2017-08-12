@@ -5,7 +5,7 @@ function awesomeFn() {
 
 describe("my-awesome-lib", function () {
   it("should return string", function () {
-    expect(awesomeFn()).toBe("awesome");
+    expect(awesomeFn()).toBe(null);
   });
 
   it("should return string 2", function (done) {

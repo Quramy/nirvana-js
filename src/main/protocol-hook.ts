@@ -11,8 +11,14 @@ export function registerProtocolHook(targetFiles: string[], fixuteFileName: stri
       fs.readFile(fname, "utf-8", (error, data) => {
         if (error) return (cb as any)(error.errno);
         if (fname === fixuteFileName) {
-          const index = +parsedUrl.query.split("=")[1];
-          data = injectScript(data, [targetFiles[index]]);
+          const tmp = (<string>parsedUrl.query).split("&").map(c => {
+            const p = c.split("=");
+            return { key: p[0], value: p[1] };
+          }).find(p => p.key === "__nirvana_index__");
+          if (tmp) {
+            const index = +tmp.value;
+            data = injectScript(data, [targetFiles[index]]);
+          }
         }
         cb(data);
       })
@@ -27,7 +33,7 @@ export function registerProtocolHook(targetFiles: string[], fixuteFileName: stri
 
   function url2mapper(url: Url) {
     if (!url.pathname) return;
-    if (url.pathname.split("/").slice(-1)[0] === "__fixture__") {
+    if (url.pathname.split("/").slice(-1)[0] === "__nirvana_fixture__") {
       return fixuteFileName;
     }
     return url.pathname;
