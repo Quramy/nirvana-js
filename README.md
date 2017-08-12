@@ -1,11 +1,11 @@
-# electron-fate
+# Nirvana
 
 A JavaScript file runner using Electron.
 
 ## Usage
 
 ```sh
-electron-fate [option] your-javascript.js
+nirvana [option] your-javascript.js
 ```
 
 ## License

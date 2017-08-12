@@ -1,52 +1,49 @@
-import { parse } from "url";
-import * as fs from "fs";
 import * as path from "path";
-import { app, protocol, BrowserWindow } from "electron";
+import { app, BrowserWindow } from "electron";
+import { createTimer } from "./timer";
 import { registerLogging } from "./logging";
+import { registerProtocolHook } from "./protocol-hook";
 
 export interface MainProcessOptions {
+  configFileName?: string;
   target: string[];
+  customContextFile?: string;
 }
 
 const opt: MainProcessOptions = JSON.parse(process.argv.splice(-1)[0]);
-
-console.log("hello, main.js", opt);
-const fixuteFileName = path.resolve(__dirname, "../../assets/fixture.html");
-
-function injectScript(html: string, targetScripts: string[]) {
-  return html.replace(/<\/body>/g, (a, b, c) => {
-    return targetScripts.map(name => `<script src="${name}"></script>`).join("\n") + "</body>";
-  });
-}
-
-function protocolHook(targetFiles: string[]) {
-  protocol.interceptStringProtocol("file", (request: Electron.InterceptStringProtocolRequest, cb) => {
-    console.log(request);
-    const parsedUrl = parse(request.url);
-    if (!parsedUrl.pathname) return cb();
-    fs.readFile(parsedUrl.pathname, "utf-8", (error, data) => {
-      if (error) return (cb as any)(error.errno);
-      if (parsedUrl.pathname === fixuteFileName) {
-        const index = +parsedUrl.query.split("=")[1];
-        data = injectScript(data, [targetFiles[index]]);
-      }
-      cb(data);
-    })
-  });
-}
-
+const defaultFixuteFileName = path.resolve(__dirname, "../../assets/fixture.html");
 let winList: Electron.BrowserWindow[] = [];
+
+function createConfig(opt: MainProcessOptions) {
+  return {
+    target: opt.target,
+    fixuteFileName: opt.customContextFile ? path.resolve(process.cwd(), opt.customContextFile) : defaultFixuteFileName,
+    concurrency: 1,
+    captureConsole: true,
+    colors: true,
+    browserNoActivityTimout: 1000,
+    executionTimeout: 15000,
+    windowOption: {
+      show: false,
+      webPreferences: { } as  any,
+    }
+  };
+}
+
 app.on("ready", () => {
+  const { target, fixuteFileName, windowOption } = createConfig(opt);
   registerLogging();
-  protocolHook(opt.target);
+  registerProtocolHook(target, fixuteFileName);
   opt.target.forEach((file, i) => {
     const win = new BrowserWindow({
+      ...windowOption,
       webPreferences: {
+        ...windowOption.webPreferences,
         preload: path.resolve(__dirname, "../renderer/preload.js"),
       },
     });
-    // TODO using config valule
-    win.loadURL("file://" + fixuteFileName + "?index=" + i);
+    createTimer(win, opt);
+    win.loadURL("file://" + path.join(process.cwd(), "__fixture__") + "?index=" + i);
     winList.push(win);
   });
 });

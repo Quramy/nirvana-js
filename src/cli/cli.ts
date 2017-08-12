@@ -15,17 +15,20 @@ function main() {
   yargs
     .usage("Usage: $0 [options]")
     .options("h", { alias: "help" })
+    .options("c", { alias: "config", desc: "Configuration file path"})
+    .options("custom-context-file", { desc: "custom-context-file" })
   ;
-  const { } = yargs.argv;
+  const configFileName = yargs.argv.config;
+  const { customContextFile } = yargs.argv;
   const target = yargs.argv._;
-  // console.log(yargs.argv);
   if (!target || !target.length) {
     yargs.showHelp();
     return;
   }
-
   bootstrap({
     target,
+    configFileName,
+    customContextFile,
   });
 }
 

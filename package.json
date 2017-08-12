@@ -1,15 +1,15 @@
 {
-  "name": "electron-fate",
-  "version": "0.1.0",
-  "description": "",
+  "name": "nirvana-js",
+  "version": "0.0.1",
+  "description": "Run .js file on Electron",
   "main": "lib/index.js",
   "bin": {
-    "electron-fate": "bin/cli.js",
-    "fatron": "bin/cli.js"
+    "nirvana": "bin/cli.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "prepublish": "tsc"
   },
   "author": "quramy",
   "license": "MIT",
