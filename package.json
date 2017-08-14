@@ -1,6 +1,6 @@
 {
   "name": "nirvana-js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Run .js file on Electron",
   "main": "lib/index.js",
   "bin": {
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w",
-    "prepublish": "tsc"
+    "prepublish": "tsc -p ."
   },
   "author": "quramy",
   "license": "MIT",
