@@ -4,7 +4,7 @@ JavaScript runner using Electron.
 ## Install
 
 ```sh
-npm install electron nirvana
+npm install electron nirvana-js
 ```
 
 ## Usage
