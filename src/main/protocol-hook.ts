@@ -27,7 +27,7 @@ export function registerProtocolHook(targetFiles: string[], fixuteFileName: stri
 
   function injectScript(html: string, targetScripts: string[]) {
     return html.replace(/<\/body>/g, (a, b, c) => {
-      return targetScripts.map(name => `<script src="${name}"></script>`).join("\n") + "</body>";
+      return targetScripts.map(name => `<script>require("./${name}")</script>`).join("\n") + "</body>";
     });
   }
 

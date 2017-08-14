@@ -1,3 +1,7 @@
+import { EventEmitter } from "events";
+
+export const notifyClose = new EventEmitter();
+
 export interface Timer {
   start(): void;
   tick(): void;
@@ -30,7 +34,8 @@ function createTimerInternal(cb: Function, nat = 1000, dt = 0) {
 const timers: {[id: number]: Timer} = {};
 
 export function createTimer(win: Electron.BrowserWindow, opt: any) {
-  timers[win.id] = createTimerInternal(() => win.close()).start();
+  const id = win.id;
+  timers[id] = createTimerInternal(() => notifyClose.emit("close", id, 0)).start();
 }
 
 export function tick(id: number) {

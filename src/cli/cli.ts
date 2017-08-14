@@ -9,6 +9,9 @@ function bootstrap(electronOpt: any) {
     cwd: process.cwd(),
     stdio: "inherit",
   });
+  p.on("exit", (code) => process.exit(code));
+  p.on("close", (code) => process.exit(code));
+  p.on("error", err => console.error("An error occures on " + p.pid + ", " + err));
 }
 
 function main() {
