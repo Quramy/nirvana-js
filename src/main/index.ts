@@ -5,30 +5,64 @@ import { createTimer, notifyClose } from "./timer";
 import { registerLogging } from "./logging";
 import { registerProtocolHook } from "./protocol-hook";
 import * as _ from "lodash";
-import { NirvanaConfig, MainProcessOptions } from "../types/config";
+import { NirvanaConfig, MainProcessOptions, NirvanaConfigObject } from "../types/config";
 const { Gaze } = require("gaze");
 
-const opt: MainProcessOptions = JSON.parse(process.argv.splice(-1)[0]);
 const defaultFixuteFileName = path.resolve(__dirname, "../../assets/fixture.html");
 let winList: Electron.BrowserWindow[] = [];
 
-function createConfig(opt: MainProcessOptions): NirvanaConfig {
+function createConfigObj(opt: MainProcessOptions, baseConf: NirvanaConfig): NirvanaConfig {
   const basePath = path.resolve(process.cwd(), opt.basePath || "./");
-  return {
-    target: opt.target,
-    fixuteFileName: opt.customContextFile ? path.resolve(basePath, opt.customContextFile) : defaultFixuteFileName,
-    concurrency: opt.concurrency || 4,
-    captureConsole: true,
-    colors: true,
-    watch: opt.watch,
-    browserNoActivityTimout: 1000,
-    executionTimeout: 15000,
-    basePath,
-    windowOption: {
-      show: !!opt.show,
-      webPreferences: { } as  any,
+  const ret = { ...baseConf };
+  if (opt.target) ret.target = opt.target;
+  if (opt.customContextFile) ret.customContextFile = path.resolve(basePath, opt.customContextFile);
+  if (opt.concurrency) ret.concurrency = opt.concurrency;
+  if (opt.captureConsole === false) ret.captureConsole = false;
+  // if (opt.colors === false) ret.colors = false;
+  if (!!opt.watch) ret.watch = true;
+  opt.basePath = basePath;
+  if (opt.show) ret.windowOption.show = true;
+  return ret;
+}
+
+const defaultConfig: NirvanaConfig = {
+  basePath: process.cwd(),
+  target: [],
+  browserNoActivityTimout: 1000,
+  executionTimeout: 15000,
+  captureConsole: true,
+  colors: true,
+  concurrency: 4,
+  customContextFile: defaultFixuteFileName,
+  watch: false,
+  windowOption: {
+    show: false,
+    webPreferences: { },
+  },
+};
+
+function executeCustomConfigJS(scriptFilePath: string): Partial<NirvanaConfig> | undefined {
+  try {
+    const result = require(path.resolve(process.cwd(), scriptFilePath));
+    let conf: Partial<NirvanaConfig>;
+    if (typeof result === "object") {
+      conf = result;
+      return conf;
+    } else if (typeof result === "function") {
+      conf = result();
+      return conf;
     }
-  };
+  } catch (e) {
+  }
+}
+
+function verifyConfig(conf: NirvanaConfig) {
+  let result = true;
+  if (!conf.target.length) {
+    console.error("Target script file should be specified");
+    result = false;
+  }
+  return result;
 }
 
 const winMap: { [id: number]: Electron.BrowserWindow | null } = { };
@@ -80,13 +114,24 @@ function createWindow(config: NirvanaConfig, idx: number, filePatternsToWatch: s
   };
 }
 
+const opt: MainProcessOptions = JSON.parse(process.argv.splice(-1)[0]);
 app.on("ready", () => {
 
-  const conf = createConfig(opt);
+  let confBase: NirvanaConfig;
+  if (opt.configFileName) {
+    confBase = { ...defaultConfig, ...executeCustomConfigJS(opt.configFileName) };
+  } else {
+    confBase = defaultConfig;
+  }
+  const conf = createConfigObj(opt, confBase);
+
+  if (!verifyConfig(conf)) {
+    return process.exit(1);
+  }
 
   registerLogging();
 
-  registerProtocolHook(conf.target, conf.fixuteFileName);
+  registerProtocolHook(conf.target, conf.customContextFile);
 
   notifyClose.on("close", (id: number, code: number = 0) => {
     const win = winMap[id];

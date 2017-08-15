@@ -4,13 +4,14 @@ export interface MainProcessOptions {
   show: boolean;
   watch: boolean;
   basePath?: string;
+  captureConsole?: boolean;
   concurrency?: number;
   customContextFile?: string;
 }
 
-export interface NirvanaConfig {
+export interface NirvanaConfigObject {
   target: string[];
-  fixuteFileName: string;
+  customContextFile: string;
   concurrency: number;
   captureConsole: boolean;
   colors: boolean;
@@ -22,4 +23,7 @@ export interface NirvanaConfig {
     show: boolean;
     webPreferences: any;
   }
+}
+
+export interface NirvanaConfig extends NirvanaConfigObject {
 }

@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as fs from "fs";
 import { spawn } from "child_process";
 import * as yargs from "yargs";
 
@@ -23,18 +24,28 @@ function main() {
     .options("w", { alias: "watch", desc: "Watch mode", boolean: true, default: false })
     .options("show", { desc: "Whether to desplay browser windows." , boolean: true, default: false })
     .options("concurrency", { desc: "How many windows Nirvana launches in parallel." , number: true, default: 4 })
-    .options("custom-context-file", { desc: "custom-context-file" })
+    .options("capture-console", { desc: "Whether to capture logging message in browser.." , boolean: true, default: true })
+    .options("custom-context-file", { desc: "HTML context file.", string: true })
   ;
-  const configFileName = yargs.argv.config;
+  const configFileName = yargs.argv.config || "nirvana.conf.js";
   const target = yargs.argv._;
-  if (!target || !target.length) {
-    yargs.showHelp();
-    return;
+  let hasConf =  fs.existsSync(configFileName);
+  if (hasConf) {
+    bootstrap({
+      target,
+      configFileName,
+      ...yargs.argv,
+    });
+  } else {
+    if (!target || !target.length) {
+      yargs.showHelp();
+      return;
+    }
+    bootstrap({
+      target,
+      ...yargs.argv,
+    });
   }
-  bootstrap({
-    target,
-    ...yargs.argv,
-  });
 }
 
 main();
