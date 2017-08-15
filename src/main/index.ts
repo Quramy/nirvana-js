@@ -5,31 +5,25 @@ import { createTimer, notifyClose } from "./timer";
 import { registerLogging } from "./logging";
 import { registerProtocolHook } from "./protocol-hook";
 import * as _ from "lodash";
+import { NirvanaConfig, MainProcessOptions } from "../types/config";
 const { Gaze } = require("gaze");
-
-export interface MainProcessOptions {
-  configFileName?: string;
-  target: string[];
-  show: boolean;
-  watch: boolean;
-  concurrency?: number;
-  customContextFile?: string;
-}
 
 const opt: MainProcessOptions = JSON.parse(process.argv.splice(-1)[0]);
 const defaultFixuteFileName = path.resolve(__dirname, "../../assets/fixture.html");
 let winList: Electron.BrowserWindow[] = [];
 
-function createConfig(opt: MainProcessOptions) {
+function createConfig(opt: MainProcessOptions): NirvanaConfig {
+  const basePath = path.resolve(process.cwd(), opt.basePath || "./");
   return {
     target: opt.target,
-    fixuteFileName: opt.customContextFile ? path.resolve(process.cwd(), opt.customContextFile) : defaultFixuteFileName,
+    fixuteFileName: opt.customContextFile ? path.resolve(basePath, opt.customContextFile) : defaultFixuteFileName,
     concurrency: opt.concurrency || 4,
     captureConsole: true,
     colors: true,
     watch: opt.watch,
     browserNoActivityTimout: 1000,
     executionTimeout: 15000,
+    basePath,
     windowOption: {
       show: !!opt.show,
       webPreferences: { } as  any,
@@ -44,7 +38,8 @@ interface Watcher extends NodeJS.EventEmitter {
   close(): void;
 }
 
-function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, watch: boolean, idx: number, filePatternsToWatch: string[]) {
+function createWindow(config: NirvanaConfig, idx: number, filePatternsToWatch: string[]) {
+  const { windowOption, watch, basePath } = config;
   let started = false;
   let position: { x?: number; y?: number } = { };
   const positionFile = path.join(app.getPath("userData"), `position_${idx}.json`);
@@ -62,8 +57,8 @@ function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, wa
           ...position,
           ...windowOption,
           webPreferences: {
-            ...windowOption.webPreferences,
             preload: path.resolve(__dirname, "../renderer/preload.js"),
+            ...windowOption.webPreferences,
           },
         });
         const id = win.id;
@@ -73,7 +68,7 @@ function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, wa
           gazeFileWather = new Gaze(filePatternsToWatch);
           gazeFileWather.on("changed", (changedFilePath: string) => win.webContents.send("reload"));
         }
-        win.loadURL("file://" + path.join(process.cwd(), "__nirvana_fixture__") + "?__nirvana_index__=" + idx);
+        win.loadURL("file://" + path.join(basePath, "__nirvana_fixture__") + "?__nirvana_index__=" + idx);
         win.once("close", () => fs.writeFileSync(positionFile, JSON.stringify(win.getPosition()), "utf-8"));
         win.once("closed", () => {
           resolve(codeMap[id] || 0);
@@ -87,15 +82,15 @@ function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, wa
 
 app.on("ready", () => {
 
-  const { target, fixuteFileName, concurrency, windowOption, watch } = createConfig(opt);
+  const conf = createConfig(opt);
 
   registerLogging();
 
-  registerProtocolHook(target, fixuteFileName);
+  registerProtocolHook(conf.target, conf.fixuteFileName);
 
   notifyClose.on("close", (id: number, code: number = 0) => {
     const win = winMap[id];
-    if (!win || watch) return;
+    if (!win || conf.watch) return;
     codeMap[id] = code;
     win.close();
     winMap[id] = null;
@@ -106,8 +101,8 @@ app.on("ready", () => {
     notifyClose.emit("close", id, code);
   });
 
-  const windowList = opt.target.map((f, i) => createWindow(windowOption, watch, i, [f]));
-  const queues = _.range(concurrency).map(i => {
+  const windowList = opt.target.map((f, i) => createWindow(conf, i, [f]));
+  const queues = _.range(conf.concurrency).map(i => {
     return windowList.reduce((queue, win) => {
       return queue.then((codes) => win.start().then(code => [code, ...codes]));
     }, Promise.resolve([] as number[]));
