@@ -15,7 +15,3 @@ describe("my-awesome-lib", function () {
     }, 600);
   });
 });
-
-afterAll(() => {
-  console.log("done!");
-});

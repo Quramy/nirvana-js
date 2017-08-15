@@ -5,6 +5,7 @@ import { createTimer, notifyClose } from "./timer";
 import { registerLogging } from "./logging";
 import { registerProtocolHook } from "./protocol-hook";
 import * as _ from "lodash";
+const { Gaze } = require("gaze");
 
 export interface MainProcessOptions {
   configFileName?: string;
@@ -39,7 +40,11 @@ function createConfig(opt: MainProcessOptions) {
 const winMap: { [id: number]: Electron.BrowserWindow | null } = { };
 const codeMap: { [id: number]: number } = { };
 
-function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, watch: boolean, idx: number) {
+interface Watcher extends NodeJS.EventEmitter {
+  close(): void;
+}
+
+function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, watch: boolean, idx: number, filePatternsToWatch: string[]) {
   let started = false;
   let position: { x?: number; y?: number } = { };
   const positionFile = path.join(app.getPath("userData"), `position_${idx}.json`);
@@ -51,6 +56,7 @@ function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, wa
     start: () => {
       if (started) return Promise.resolve(-10);
       started = true;
+      let gazeFileWather: Watcher;
       return new Promise((resolve, reject) => {
         const win = new BrowserWindow({
           ...position,
@@ -61,40 +67,52 @@ function createWindow(windowOption: Electron.BrowserWindowConstructorOptions, wa
           },
         });
         const id = win.id;
-        if (!watch) createTimer(win, opt);
+        if (!watch) {
+          createTimer(win, opt);
+        } else {
+          gazeFileWather = new Gaze(filePatternsToWatch);
+          gazeFileWather.on("changed", (changedFilePath: string) => win.webContents.send("reload"));
+        }
         win.loadURL("file://" + path.join(process.cwd(), "__nirvana_fixture__") + "?__nirvana_index__=" + idx);
-        win.once("close", () => {
-          fs.writeFileSync(positionFile, JSON.stringify(win.getPosition()), "utf-8");
+        win.once("close", () => fs.writeFileSync(positionFile, JSON.stringify(win.getPosition()), "utf-8"));
+        win.once("closed", () => {
+          resolve(codeMap[id] || 0);
+          if (gazeFileWather) gazeFileWather.close();
         });
-        win.once("closed", () => resolve(codeMap[id]));
         winMap[id] = win;
       })
     },
   };
 }
 
-notifyClose.on("close", (id: number, code: number = 0) => {
-  const win = winMap[id];
-  if (!win) return;
-  codeMap[id] = code;
-  win.close();
-  winMap[id] = null;
-  delete winMap[id];
-});
-
 app.on("ready", () => {
+
   const { target, fixuteFileName, concurrency, windowOption, watch } = createConfig(opt);
+
   registerLogging();
+
   registerProtocolHook(target, fixuteFileName);
+
+  notifyClose.on("close", (id: number, code: number = 0) => {
+    const win = winMap[id];
+    if (!win || watch) return;
+    codeMap[id] = code;
+    win.close();
+    winMap[id] = null;
+    delete winMap[id];
+  });
+
   ipcMain.on("exit", (e: Electron.IpcMessageEvent, { id, code }: { id: number, code: number }) => {
     notifyClose.emit("close", id, code);
   });
-  const windowList = opt.target.map((f, i) => createWindow(windowOption, watch, i));
+
+  const windowList = opt.target.map((f, i) => createWindow(windowOption, watch, i, [f]));
   const queues = _.range(concurrency).map(i => {
     return windowList.reduce((queue, win) => {
       return queue.then((codes) => win.start().then(code => [code, ...codes]));
     }, Promise.resolve([] as number[]));
   });
+
   Promise.all(queues).then(codesList => {
     const nonzeroList = codesList.reduce((acc, l) => [...acc, ...l], []).filter(c => c > 0);
     if (nonzeroList.length) {

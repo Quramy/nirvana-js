@@ -29,6 +29,8 @@ window.addEventListener("error", (e: ErrorEvent) => {
   });
 });
 
+ipcRenderer.on("reload", () => win.reload());
+
 export const nirvana = {
   fs,
   path,
