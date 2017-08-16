@@ -1,35 +1,56 @@
 import { NirvanaClient } from "./preload";
 
+/**
+ *
+ * Tell whether the platform is running on nirvana-js.
+ *
+ **/
 export function isNirvana() {
   if (typeof window !== "object") return false;
   return !!(window as any)["__is_nirvana__"];
 }
 
-export function getNirvana(): NirvanaClient | undefined {
-  if (!isNirvana()) return undefined;
-  return (window as any)["__nirvana__"] as NirvanaClient;
-}
-
+/**
+ *
+ * Get the current browser window.
+ *
+ * @return A Electron's BrowserWindow object
+ *
+ **/
 export function getCurrentWindow(): Electron.BrowserWindow | undefined {
   const nirvana = getNirvana();
   if (!nirvana) return;
-  return nirvana.remote.getCurrentWindow();
+  return nirvana._.remote.getCurrentWindow();
 }
 
+/**
+ *
+ * Close the current browser process immediately.
+ *
+ * @param code: Exit code.
+ *
+ **/
 export function exit(code = 0) {
   const nirvana = getNirvana();
   if (!nirvana) return;
-  nirvana.exit(code);
+  nirvana._.exit(code);
 }
 
+/**
+ *
+ * Captures a snapshot of the current window.
+ *
+ * @param fname: The location of captured PNG file.
+ *
+ **/
 export function screenshot(fname: string): Promise<undefined> {
   const nirvana = getNirvana();
   if (!nirvana) return Promise.resolve();
-  const win = nirvana.remote.getCurrentWindow();
+  const win = nirvana._.remote.getCurrentWindow();
   if (!win) return Promise.resolve();
-  const fs = nirvana.fs;
-  const path = nirvana.path;
-  const mkdirp = nirvana.mkdirp;
+  const fs = nirvana._.fs;
+  const path = nirvana._.path;
+  const mkdirp = nirvana._.mkdirp;
   const requestIdleCallback = (window as any)["requestIdleCallback"];
   return new Promise<undefined>((resolve, reject) => {
     requestIdleCallback(() => {
@@ -51,4 +72,9 @@ export function screenshot(fname: string): Promise<undefined> {
       })
     }, { timeout: 1000 });
   });
+}
+
+function getNirvana(): NirvanaClient | undefined {
+  if (!isNirvana()) return undefined;
+  return (window as any)["__nirvana__"] as NirvanaClient;
 }

@@ -32,11 +32,13 @@ window.addEventListener("error", (e: ErrorEvent) => {
 ipcRenderer.on("reload", () => win.reload());
 
 export const nirvana = {
-  fs,
-  path,
-  remote,
-  exit,
-  mkdirp: mkdirp as any,
+  _ : {
+    fs,
+    path,
+    remote,
+    exit,
+    mkdirp: mkdirp as any,
+  },
 };
 
 export type NirvanaClient = typeof nirvana;
@@ -44,4 +46,3 @@ export type NirvanaClient = typeof nirvana;
 ["log", "warn", "error", "info", "debug"].forEach(wrap);
 (window as any)["__is_nirvana__"] = true;
 (window as any)["__nirvana__"] = nirvana;
-(window as any).Nirvana = nirvana;
