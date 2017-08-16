@@ -4,21 +4,25 @@
 [![npm version](https://badge.fury.io/js/nirvana-js.svg)](https://badge.fury.io/js/nirvana-js)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Quramy/nirvana-js/master/LICENSE)
 
-JavaScript runner using Electron. It provides easy DOM manipulation with Node.js scripting :space_invader:
+JavaScript runner using Electron. It provides easy DOM manipulation with Node.js scripting :space_invader:.
 
 ## Getting started
 
 ```sh
-npm -g istall electron nirvana-js
+$ npm -g istall electron nirvana-js
 ```
+
+Then, write a script:
 
 ```js
 // your-script.js
 console.log(document.querySelector('body').innerHTML);
 ```
 
+Finally exec the script with `nirvana` command :zap:
+
 ```sh
-nirvana your-script.js
+$ nirvana your-script.js
 ```
 
 ## Install
