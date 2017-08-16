@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "chalk": "^2.1.0",
+    "cp-file": "^4.2.0",
     "gaze": "^1.1.2",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
