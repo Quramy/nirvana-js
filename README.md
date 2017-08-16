@@ -37,7 +37,7 @@ module.exports = {
 ```
 
 ## Client Utility Functions
-In scripts to run on nirvana-js, some utility functions are available.
+In scripts to run on nirvana-js, some utility functions are available. For example:
 
 ```js
 const { screenshot } from 'nirvana-js';
@@ -48,7 +48,6 @@ function yourFunc() {
 }
 ```
 <!-- doc -->
-# client-fns
 <!-- THIS DOCUMENT IS AUTOMATICALLY GENERATED FROM src/*.ts -->
 <!-- Please edit src/*.ts and `npm run build:docs:api` -->
 
@@ -62,7 +61,6 @@ export declare function exit(code?: number): void;
 export declare function screenshot(fname: string): Promise<undefined>;
 ```
 
-----
 
 #### `export declare function isNirvana(): boolean;`
 
@@ -70,7 +68,6 @@ export declare function screenshot(fname: string): Promise<undefined>;
 
 Tell whether the platform is running on nirvana-js.
 
-----
 
 #### `export declare function getCurrentWindow(): Electron.BrowserWindow | undefined;`
 
@@ -81,7 +78,6 @@ Get the current browser window.
 
 <b>return</b> A Electron's BrowserWindow object
 
-----
 
 #### `export declare function exit(code?: number): void;`
 
@@ -92,7 +88,6 @@ Close the current browser process immediately.
 
 <b>param</b> code: Exit code.
 
-----
 
 #### `export declare function screenshot(fname: string): Promise<undefined>;`
 
@@ -103,7 +98,6 @@ Captures a snapshot of the current window.
 
 <b>param</b> fname: The location of captured PNG file.
 
-----
 
 
 <!-- end:doc -->

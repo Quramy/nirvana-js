@@ -1,4 +1,3 @@
-# <%= title.replace(".d.ts", "") %>
 <!-- THIS DOCUMENT IS AUTOMATICALLY GENERATED FROM src/*.ts -->
 <!-- Please edit src/*.ts and `npm run build:docs:api` -->
 <%
@@ -46,11 +45,9 @@ function renderAPIHeader(section) {
 <%= sections.filter(section => !shouldIgnoreSection(section)).map(section => section.codeText).join("\n").trim() %>
 ```
 
-----
 <% sections.filter(section => !shouldIgnoreSection(section)).forEach(section => { %>
 <%= renderAPIHeader(section) %>
 
 <%= section.docsText %>
 
-----
 <% }) %>
