@@ -1,7 +1,11 @@
 {
   "name": "nirvana-js",
-  "version": "1.1.0",
-  "description": "Run .js file on Electron",
+  "version": "1.1.1",
+  "description": "JavaScript file runner built on Electron",
+  "keywords": [
+    "Electron",
+    "runner"
+  ],
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "bin": {
@@ -13,11 +17,15 @@
     "prepublish": "tsc -p .",
     "reg": "reg-suit run"
   },
-  "author": "quramy",
+  "author": {
+    "name": "Quramy",
+    "email": "yosuke.kurami@gmail.com"
+  },
   "license": "MIT",
   "peerDependencies": {
-    "electron": "^1.7.5"
+    "electron": "^1.6.0"
   },
+  "repository": "git+https://github.com/Quramy/nirvana-js.git",
   "ava": {
     "files": "lib/e2e/**/*.js",
     "concurrency": 2
