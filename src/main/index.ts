@@ -5,6 +5,7 @@ import { createTimer } from "./timer";
 import { EventEmitter } from "events";
 import { registerLogging } from "./logging";
 import { registerProtocolHook } from "./protocol-hook";
+import * as glob from "glob";
 import * as _ from "lodash";
 import { NirvanaConfig, MainProcessOptions, NirvanaConfigObject } from "../types/config";
 import logger from "./logger";
@@ -23,7 +24,7 @@ interface Watcher extends NodeJS.EventEmitter {
 export const notifyClose = new EventEmitter();
 
 function createWindow(conf: NirvanaConfig, idx: number, filePatternsToWatch: string[]) {
-  const { windowOption, watch, customContextFile, browserNoActivityTimout } = conf;
+  const { windowOption, watch, contextFile, browserNoActivityTimout } = conf;
   let started = false;
   let position: { x?: number; y?: number } = { };
   const positionFile = path.join(app.getPath("userData"), `position_${idx}.json`);
@@ -55,8 +56,7 @@ function createWindow(conf: NirvanaConfig, idx: number, filePatternsToWatch: str
           gazeFileWather = new Gaze(filePatternsToWatch);
           gazeFileWather.on("changed", (changedFilePath: string) => win.webContents.send("reload"));
         }
-        // win.loadURL("file://" + path.join(basePath, "__nirvana_fixture__") + "?__nirvana_index__=" + idx);
-        const url = "file://" +  customContextFile + "?__nirvana_index__=" + idx;
+        const url = "file://" +  contextFile + "?__nirvana_index__=" + idx;
         logger.verbose(url);
         win.loadURL(url);
         win.once("close", () => fs.writeFileSync(positionFile, JSON.stringify(win.getPosition()), "utf-8"));
@@ -68,6 +68,16 @@ function createWindow(conf: NirvanaConfig, idx: number, filePatternsToWatch: str
       })
     },
   };
+}
+
+function globp(p: string, cwd: string) {
+  return new Promise<string[]>((res, rej) => {
+    glob(p, { cwd }, (err, list) => {
+      if (err) return rej(err);
+      res(list);
+    });
+  }).then(list => list.map(item => path.resolve(cwd, item)))
+  ;
 }
 
 const opt: MainProcessOptions = JSON.parse(process.argv.splice(-1)[0]);
@@ -90,8 +100,6 @@ app.on("ready", () => {
 
   if (conf.captureConsole) registerLogging();
 
-  registerProtocolHook(conf);
-
   notifyClose.on("close", (id: number, code: number = 0) => {
     const win = winMap[id];
     if (!win || conf.watch) return;
@@ -109,20 +117,28 @@ app.on("ready", () => {
     notifyClose.emit("close", id, code);
   });
 
-  const windowList = opt.target.map((f, i) => createWindow(conf, i, [f]));
-  const queues = _.range(conf.concurrency).map(i => {
-    return windowList.reduce((queue, win) => {
-      return queue.then((codes) => win.start().then(code => [code, ...codes] as number[]));
-    }, Promise.resolve<number[]>([] as number[]));
-  });
+  Promise.all(conf.target.map(p => globp(p, conf.basePath)))
+    .then(listlist => _.uniq(_.flatten(listlist)))
+    .then(scriptList => {
+      logger.verbose("Target scripts:", scriptList);
+      registerProtocolHook(scriptList, conf);
+      const windowList = scriptList.map((f, i) => createWindow(conf, i, [f]));
+      const queues = _.range(conf.concurrency).map(i => {
+        return windowList.reduce((queue, win) => {
+          return queue.then((codes) => win.start().then(code => [code, ...codes] as number[]));
+        }, Promise.resolve<number[]>([] as number[]));
+      });
+      return Promise.all(queues);
+    })
+    .then(codesList => {
+      const nonzeroList = codesList.reduce((acc, l) => [...acc, ...l], []).filter(c => c > 0);
+      if (nonzeroList.length) {
+        process.exit(nonzeroList[nonzeroList.length - 1]);
+      } else {
+        process.exit(0);
+      }
+    })
+  ;
 
-  Promise.all(queues).then(codesList => {
-    const nonzeroList = codesList.reduce((acc, l) => [...acc, ...l], []).filter(c => c > 0);
-    if (nonzeroList.length) {
-      process.exit(nonzeroList[nonzeroList.length - 1]);
-    } else {
-      process.exit(0);
-    }
-  });
 });
 

@@ -1,16 +1,18 @@
 import * as fs from "fs";
 import * as path from "path";
-import { MainProcessOptions, NirvanaConfig } from "../types/config";
+import { MainProcessOptions, NirvanaConfig, CustomConfig } from "../types/config";
+import * as chalk from "chalk";
+import logger from "./logger";
 
 const defaultFixuteFileName = path.resolve(__dirname, "../../assets/fixture.html");
 export function createConfigObj(opt: MainProcessOptions, baseConf: NirvanaConfig): NirvanaConfig {
-  const basePath = path.resolve(process.cwd(), opt.basePath || "./");
+  const basePath = opt.basePath ? path.resolve(process.cwd(), opt.basePath || "./") : baseConf.basePath;
   const ret = { ...baseConf };
-  if (opt.target) ret.target = opt.target;
+  if (opt.target && opt.target.length) ret.target = opt.target;
   if (opt.customContextFile) {
-    ret.customContextFile = path.resolve(basePath, opt.customContextFile);
+    ret.contextFile = path.resolve(basePath, opt.customContextFile);
   } else {
-    ret.customContextFile = path.resolve(basePath, baseConf.customContextFile);
+    ret.contextFile = path.resolve(basePath, baseConf.contextFile);
   }
   if (opt.concurrency) ret.concurrency = opt.concurrency;
   if (opt.noCaptureConsole) ret.captureConsole = false;
@@ -38,7 +40,7 @@ export const defaultConfig: NirvanaConfig = {
   captureConsole: true,
   colors: true,
   concurrency: 4,
-  customContextFile: defaultFixuteFileName,
+  contextFile: defaultFixuteFileName,
   watch: false,
   windowOption: {
     show: false,
@@ -47,17 +49,37 @@ export const defaultConfig: NirvanaConfig = {
   loglevel: "info",
 };
 
+function specifyTarget(arg: CustomConfig["scripts"]): string[] {
+  if (!arg) return [];
+  let x: string | string[];
+  if (typeof arg === "function") {
+    x = arg();
+  } else {
+    x = arg;
+  }
+  if (Array.isArray(x)) {
+    return x;
+  } else {
+    return [x];
+  }
+}
+
 export function executeCustomConfigJS(scriptFilePath: string): Partial<NirvanaConfig> | undefined {
   try {
-    const result = require(path.resolve(process.cwd(), scriptFilePath));
-    let conf: Partial<NirvanaConfig>;
+    const fp = path.resolve(process.cwd(), scriptFilePath);
+    const basePath = path.dirname(fp);
+    const result = require(fp);
+    let conf: CustomConfig = { };
     if (typeof result === "object") {
       conf = result;
-      return conf;
     } else if (typeof result === "function") {
       conf = result();
-      return conf;
     }
+    return {
+      basePath,
+      target: specifyTarget(conf.scripts),
+      ...conf
+    } as any;
   } catch (e) {
   }
 }
@@ -65,7 +87,7 @@ export function executeCustomConfigJS(scriptFilePath: string): Partial<NirvanaCo
 export function verifyConfig(conf: NirvanaConfig) {
   let result = true;
   if (!conf.target.length) {
-    console.error("Target script file should be specified");
+    logger.error(chalk.red("One or more script files should be specified."));
     result = false;
   }
   return result;

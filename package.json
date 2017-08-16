@@ -26,6 +26,7 @@
     "chalk": "^2.1.0",
     "cp-file": "^4.2.0",
     "gaze": "^1.1.2",
+    "glob": "^7.1.2",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "yargs": "^8.0.2"
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@azu/docco": "^0.7.2",
     "@types/chalk": "^0.4.31",
+    "@types/glob": "^5.0.31",
     "@types/lodash": "^4.14.73",
     "@types/mkdirp": "^0.5.0",
     "@types/node": "^8.0.22",

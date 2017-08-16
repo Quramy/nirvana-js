@@ -32,7 +32,7 @@ export function main() {
     .options("init", { desc: "Generate configuration file.", boolean: true })
     .options("show", { desc: "Whether to desplay browser windows.", boolean: true, default: false })
     .options("concurrency", { desc: "How many windows Nirvana launches in parallel.", number: true, default: 4 })
-    .options("no-timeout", { alias: "no-capture-console", desc: "Suppress closing browser window via timeout.", boolean: true, default: false })
+    .options("no-timeout", { desc: "Suppress closing browser window via timeout.", boolean: true, default: false })
     .options("no-capture-console", { desc: "Suppress to capture logging message in browser.", boolean: true, default: false })
     .options("custom-context-file", { desc: "HTML context file.", string: true })
   ;

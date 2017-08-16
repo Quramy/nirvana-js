@@ -1,4 +1,10 @@
+'use strict';
+
 module.exports = {
-  target: ["my-test.js"],
-  customContextFile: "fixture.html",
+  scripts: "*-test.js",
+  contextFile: "fixture.html",
+  windowOption: {
+    width: 1000,
+    height: 800,
+  },
 };

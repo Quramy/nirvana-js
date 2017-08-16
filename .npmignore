@@ -1,2 +1,6 @@
 src/
+templates/
+tools/
+regconfig.json
+tsconfig.json
 yarn.lock

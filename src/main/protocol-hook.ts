@@ -5,7 +5,7 @@ import { protocol } from "electron";
 import { NirvanaConfig } from "../types/config";
 import logger from "./logger";
 
-export function registerProtocolHook(conf: NirvanaConfig) {
+export function registerProtocolHook(scripts: string[], conf: NirvanaConfig) {
   function protocolHook(targetFiles: string[]) {
     protocol.interceptBufferProtocol("file", (request: Electron.InterceptStringProtocolRequest, cb) => {
       const parsedUrl = parse(request.url);
@@ -14,7 +14,7 @@ export function registerProtocolHook(conf: NirvanaConfig) {
       if (!fname) return cb();
       fs.readFile(fname, (error, buf) => {
         if (error) return (cb as any)(error.errno);
-        if (fname === conf.customContextFile) {
+        if (fname === conf.contextFile) {
           const tmp = (<string>parsedUrl.query).split("&").map(c => {
             const p = c.split("=");
             return { key: p[0], value: p[1] };
@@ -44,5 +44,5 @@ export function registerProtocolHook(conf: NirvanaConfig) {
     return url.pathname;
   }
 
-  protocolHook(conf.target.map(t => path.resolve(conf.basePath, t)));
+  protocolHook(scripts);
 }

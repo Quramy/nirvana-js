@@ -14,7 +14,7 @@ export interface MainProcessOptions {
 
 export interface NirvanaConfigObject {
   target: string[];
-  customContextFile: string;
+  contextFile: string;
   concurrency: number;
   captureConsole: boolean;
   colors: boolean;
@@ -26,4 +26,8 @@ export interface NirvanaConfigObject {
 }
 
 export interface NirvanaConfig extends NirvanaConfigObject {
+}
+
+export type CustomConfig = Partial<NirvanaConfig> & {
+  scripts?: string | string[] | (()  => (string | string[]));
 }
