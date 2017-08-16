@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import { app, BrowserWindow, ipcMain } from "electron";
-import { createTimer, notifyClose } from "./timer";
+import { createTimer } from "./timer";
+import { EventEmitter } from "events";
 import { registerLogging } from "./logging";
 import { registerProtocolHook } from "./protocol-hook";
 import * as _ from "lodash";
@@ -19,8 +20,10 @@ interface Watcher extends NodeJS.EventEmitter {
   close(): void;
 }
 
-function createWindow(config: NirvanaConfig, idx: number, filePatternsToWatch: string[]) {
-  const { windowOption, watch, customContextFile } = config;
+export const notifyClose = new EventEmitter();
+
+function createWindow(conf: NirvanaConfig, idx: number, filePatternsToWatch: string[]) {
+  const { windowOption, watch, customContextFile, browserNoActivityTimout } = conf;
   let started = false;
   let position: { x?: number; y?: number } = { };
   const positionFile = path.join(app.getPath("userData"), `position_${idx}.json`);
@@ -43,8 +46,11 @@ function createWindow(config: NirvanaConfig, idx: number, filePatternsToWatch: s
           },
         });
         const id = win.id;
-        if (!watch) {
-          createTimer(win, opt);
+        if (!watch && browserNoActivityTimout > 0) {
+          createTimer(id, () => {
+            logger.verbose(`window-${id} close via no activity timeout`);
+            notifyClose.emit("close", id, 0);
+          }, conf);
         } else {
           gazeFileWather = new Gaze(filePatternsToWatch);
           gazeFileWather.on("changed", (changedFilePath: string) => win.webContents.send("reload"));

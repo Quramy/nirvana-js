@@ -25,6 +25,9 @@ export function createConfigObj(opt: MainProcessOptions, baseConf: NirvanaConfig
   } else {
     ret.loglevel = "info";
   }
+  if (opt.noTimeout) {
+    ret.browserNoActivityTimout = -1;
+  }
   return ret;
 }
 
@@ -32,7 +35,6 @@ export const defaultConfig: NirvanaConfig = {
   basePath: process.cwd(),
   target: [],
   browserNoActivityTimout: 1000,
-  executionTimeout: 15000,
   captureConsole: true,
   colors: true,
   concurrency: 4,

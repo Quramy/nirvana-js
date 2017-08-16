@@ -1,41 +1,40 @@
-import { EventEmitter } from "events";
-
-export const notifyClose = new EventEmitter();
+import { NirvanaConfig } from "../types/config";
 
 export interface Timer {
   start(): void;
   tick(): void;
 }
 
-function createTimerInternal(cb: Function, nat = 1000, dt = 0) {
+function createTimerInternal(cb: Function, conf: NirvanaConfig) {
 
   function afterNoActivity() {
-    setTimeout(() => cb(), dt);
+    setTimeout(() =>cb(), conf.browserNoActivityTimout);
   }
 
   let natId: NodeJS.Timer;
 
   const t = {
     start: () => {
-      natId = setTimeout(() => {
-        afterNoActivity();
-      }, nat);
+      natId = setTimeout(() => afterNoActivity(), conf.browserNoActivityTimout);
       return t;
     },
     tick: () => {
       if (natId) clearTimeout(natId);
-      natId = setTimeout(afterNoActivity, nat);
+      natId = setTimeout(afterNoActivity, conf.browserNoActivityTimout);
       return t;
     },
   };
   return t;
 }
 
-const timers: {[id: number]: Timer} = {};
+const timers: {[id: number]: Timer} = { };
 
-export function createTimer(win: Electron.BrowserWindow, opt: any) {
-  const id = win.id;
-  timers[id] = createTimerInternal(() => notifyClose.emit("close", id, 0)).start();
+export function createTimer(id: number, cb: Function, conf: NirvanaConfig) {
+  timers[id] = createTimerInternal(cb, conf).start();
+}
+
+export function getTimer(id: number) {
+  return timers[id];
 }
 
 export function tick(id: number) {

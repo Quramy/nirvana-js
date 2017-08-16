@@ -5,6 +5,7 @@ export interface MainProcessOptions {
   watch: boolean;
   basePath?: string;
   noCaptureConsole?: boolean;
+  noTimeout?: boolean;
   concurrency?: number;
   customContextFile?: string;
   verbose?: boolean;
@@ -19,12 +20,8 @@ export interface NirvanaConfigObject {
   colors: boolean;
   watch: boolean;
   browserNoActivityTimout: number;
-  executionTimeout: number;
   basePath: string;
-  windowOption: {
-    show: boolean;
-    webPreferences: any;
-  }
+  windowOption: Electron.BrowserWindowConstructorOptions;
   loglevel: "verbose" | "info" | "silent";
 }
 
