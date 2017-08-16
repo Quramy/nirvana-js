@@ -20,6 +20,11 @@ jobs:
 
       - run: yarn
 
+      - run: |
+          cd examples/jasmine/
+          yarn
+          cd ../..
+
       - save_cache:
           paths:
             - node_modules
