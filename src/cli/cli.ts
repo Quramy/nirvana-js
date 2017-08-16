@@ -7,7 +7,7 @@ import { MainProcessOptions } from "../types/config";
 const cpf = require("cp-file");
 
 export function bootstrap(cliOpt: Partial<MainProcessOptions>, cwd = process.cwd()) {
-  return new Promise((resolve, reject) => {
+  return new Promise<number>((resolve, reject) => {
     const electronPath: string = (require("electron") as any);
     const optArgStr = JSON.stringify(cliOpt);
     const p = spawn(electronPath, [path.resolve(__dirname, "../main/index.js"), optArgStr], {
@@ -53,7 +53,7 @@ export function main() {
       target,
       configFileName,
       ...yargs.argv,
-    });
+    } as any);
   } else {
     if (!target || !target.length) {
       yargs.showHelp();
@@ -62,7 +62,7 @@ export function main() {
     p = bootstrap({
       target,
       ...yargs.argv,
-    });
+    } as any);
   }
   p.catch((reason: any) => {
     console.error("An error occures", reason);

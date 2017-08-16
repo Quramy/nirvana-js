@@ -43,7 +43,7 @@ export function exit(code = 0) {
  * @param fname: The location of captured PNG file.
  *
  **/
-export function screenshot(fname: string): Promise<undefined> {
+export function screenshot(fname: string): Promise<void> {
   const nirvana = getNirvana();
   if (!nirvana) return Promise.resolve();
   const win = nirvana._.remote.getCurrentWindow();

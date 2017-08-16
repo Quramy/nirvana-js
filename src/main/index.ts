@@ -167,8 +167,8 @@ app.on("ready", () => {
   const windowList = opt.target.map((f, i) => createWindow(conf, i, [f]));
   const queues = _.range(conf.concurrency).map(i => {
     return windowList.reduce((queue, win) => {
-      return queue.then((codes) => win.start().then(code => [code, ...codes]));
-    }, Promise.resolve([] as number[]));
+      return queue.then((codes) => win.start().then(code => [code, ...codes] as number[]));
+    }, Promise.resolve<number[]>([] as number[]));
   });
 
   Promise.all(queues).then(codesList => {
