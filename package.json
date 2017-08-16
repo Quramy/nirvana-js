@@ -8,7 +8,7 @@
     "nirvana": "bin/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ava",
     "watch": "tsc -w",
     "prepublish": "tsc -p ."
   },
@@ -16,6 +16,9 @@
   "license": "MIT",
   "peerDependencies": {
     "electron": "^1.7.5"
+  },
+  "ava": {
+    "files": "lib/e2e/**/*.js"
   },
   "dependencies": {
     "chalk": "^2.1.0",

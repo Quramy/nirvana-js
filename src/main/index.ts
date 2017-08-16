@@ -6,6 +6,7 @@ import { registerLogging } from "./logging";
 import { registerProtocolHook } from "./protocol-hook";
 import * as _ from "lodash";
 import { NirvanaConfig, MainProcessOptions, NirvanaConfigObject } from "../types/config";
+import logger from "./logger";
 const { Gaze } = require("gaze");
 
 const defaultFixuteFileName = path.resolve(__dirname, "../../assets/fixture.html");
@@ -15,13 +16,18 @@ function createConfigObj(opt: MainProcessOptions, baseConf: NirvanaConfig): Nirv
   const basePath = path.resolve(process.cwd(), opt.basePath || "./");
   const ret = { ...baseConf };
   if (opt.target) ret.target = opt.target;
-  if (opt.customContextFile) ret.customContextFile = path.resolve(basePath, opt.customContextFile);
+  if (opt.customContextFile) {
+    ret.customContextFile = path.resolve(basePath, opt.customContextFile);
+  } else {
+    ret.customContextFile = path.resolve(basePath, baseConf.customContextFile);
+  }
   if (opt.concurrency) ret.concurrency = opt.concurrency;
   if (opt.captureConsole === false) ret.captureConsole = false;
   // if (opt.colors === false) ret.colors = false;
   if (!!opt.watch) ret.watch = true;
   opt.basePath = basePath;
   if (opt.show) ret.windowOption.show = true;
+  if (opt.verbose) ret.verbose = true;
   return ret;
 }
 
@@ -39,6 +45,7 @@ const defaultConfig: NirvanaConfig = {
     show: false,
     webPreferences: { },
   },
+  verbose: false,
 };
 
 function executeCustomConfigJS(scriptFilePath: string): Partial<NirvanaConfig> | undefined {
@@ -73,7 +80,7 @@ interface Watcher extends NodeJS.EventEmitter {
 }
 
 function createWindow(config: NirvanaConfig, idx: number, filePatternsToWatch: string[]) {
-  const { windowOption, watch, basePath } = config;
+  const { windowOption, watch, customContextFile } = config;
   let started = false;
   let position: { x?: number; y?: number } = { };
   const positionFile = path.join(app.getPath("userData"), `position_${idx}.json`);
@@ -102,7 +109,10 @@ function createWindow(config: NirvanaConfig, idx: number, filePatternsToWatch: s
           gazeFileWather = new Gaze(filePatternsToWatch);
           gazeFileWather.on("changed", (changedFilePath: string) => win.webContents.send("reload"));
         }
-        win.loadURL("file://" + path.join(basePath, "__nirvana_fixture__") + "?__nirvana_index__=" + idx);
+        // win.loadURL("file://" + path.join(basePath, "__nirvana_fixture__") + "?__nirvana_index__=" + idx);
+        const url = "file://" +  customContextFile + "?__nirvana_index__=" + idx;
+        logger.verbose(url);
+        win.loadURL(url);
         win.once("close", () => fs.writeFileSync(positionFile, JSON.stringify(win.getPosition()), "utf-8"));
         win.once("closed", () => {
           resolve(codeMap[id] || 0);
@@ -125,13 +135,15 @@ app.on("ready", () => {
   }
   const conf = createConfigObj(opt, confBase);
 
+  if (conf.verbose) logger.level = "verbose";
+
   if (!verifyConfig(conf)) {
     return process.exit(1);
   }
 
   registerLogging();
 
-  registerProtocolHook(conf.target, conf.customContextFile);
+  registerProtocolHook(conf);
 
   notifyClose.on("close", (id: number, code: number = 0) => {
     const win = winMap[id];

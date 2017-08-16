@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { tick } from "./timer";
 import * as chalk from "chalk";
+import logger from "./logger";
 
 interface LogEventArgs {
   id: number;
@@ -34,13 +35,13 @@ export function registerLogging() {
     if (args.id) tick(args.id);
     if (!t || !console[t]) return;
     const targets = args.rawArg.map(x => colMap(t)(x.toString()));
-    (console[t] as Function).apply(console, [`[Log from window-${args.id}]`, ...targets]);
+    ((logger as any)[t] as Function).apply(console, [`[Log from window-${args.id}]`, ...targets]);
   });
 
   ipcMain.on("error", (e: Electron.IpcMessageEvent, args: ErrorEventArgs) => {
     if (!args) return;
     if (args.id) tick(args.id);
-    console.error(`[Error from window-${args.id}]`, chalk.red(args.error.message));
+    logger.error(`[Error from window-${args.id}]`, chalk.red(args.error.message));
     if (args.error.stack) console.error(chalk.red(args.error.stack));
   });
 

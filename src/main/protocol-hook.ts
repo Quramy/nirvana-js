@@ -1,16 +1,20 @@
-import { parse, Url } from "url";
+import * as path from "path";
 import * as fs from "fs";
+import { parse, Url } from "url";
 import { protocol } from "electron";
+import { NirvanaConfig } from "../types/config";
+import logger from "./logger";
 
-export function registerProtocolHook(targetFiles: string[], fixuteFileName: string) {
+export function registerProtocolHook(conf: NirvanaConfig) {
   function protocolHook(targetFiles: string[]) {
     protocol.interceptBufferProtocol("file", (request: Electron.InterceptStringProtocolRequest, cb) => {
       const parsedUrl = parse(request.url);
       const fname = url2mapper(parsedUrl);
+      logger.verbose(request);
       if (!fname) return cb();
       fs.readFile(fname, (error, buf) => {
         if (error) return (cb as any)(error.errno);
-        if (fname === fixuteFileName) {
+        if (fname === conf.customContextFile) {
           const tmp = (<string>parsedUrl.query).split("&").map(c => {
             const p = c.split("=");
             return { key: p[0], value: p[1] };
@@ -27,17 +31,17 @@ export function registerProtocolHook(targetFiles: string[], fixuteFileName: stri
 
   function injectScript(html: string, targetScripts: string[]) {
     return html.replace(/<\/body>/g, (a, b, c) => {
-      return targetScripts.map(name => `<script>require("./${name}")</script>`).join("\n") + "</body>";
+      return targetScripts.map(name => `<script>require("${name}")</script>`).join("\n") + "</body>";
     });
   }
 
   function url2mapper(url: Url) {
-    if (!url.pathname) return;
-    if (url.pathname.split("/").slice(-1)[0] === "__nirvana_fixture__") {
-      return fixuteFileName;
-    }
+    // if (!url.pathname) return;
+    // if (url.pathname.split("/").slice(-1)[0] === "__nirvana_fixture__") {
+    //   return cont.config;
+    // }
     return url.pathname;
   }
 
-  protocolHook(targetFiles);
+  protocolHook(conf.target.map(t => path.resolve(conf.basePath, t)));
 }

@@ -7,6 +7,7 @@ export interface MainProcessOptions {
   captureConsole?: boolean;
   concurrency?: number;
   customContextFile?: string;
+  verbose?: boolean;
 }
 
 export interface NirvanaConfigObject {
@@ -23,6 +24,7 @@ export interface NirvanaConfigObject {
     show: boolean;
     webPreferences: any;
   }
+  verbose: boolean;
 }
 
 export interface NirvanaConfig extends NirvanaConfigObject {

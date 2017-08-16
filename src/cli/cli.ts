@@ -32,6 +32,7 @@ export function main() {
     .options("concurrency", { desc: "How many windows Nirvana launches in parallel." , number: true, default: 4 })
     .options("capture-console", { desc: "Whether to capture logging message in browser.." , boolean: true, default: true })
     .options("custom-context-file", { desc: "HTML context file.", string: true })
+    .options("verbose", { desc: "Display debug logging messages.", string: true, default: false })
   ;
   const configFileName = yargs.argv.config || "nirvana.conf.js";
   const target = yargs.argv._;
