@@ -1,6 +1,6 @@
 {
   "name": "nirvana-js",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Run .js file on Electron",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
