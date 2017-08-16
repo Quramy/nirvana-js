@@ -19,7 +19,7 @@ export interface NirvanaConfigObject {
   captureConsole: boolean;
   colors: boolean;
   watch: boolean;
-  browserNoActivityTimout: number;
+  browserNoActivityTimeout: number;
   basePath: string;
   windowOption: Electron.BrowserWindowConstructorOptions;
   loglevel: "verbose" | "info" | "silent";

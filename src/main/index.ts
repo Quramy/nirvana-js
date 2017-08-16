@@ -24,7 +24,7 @@ interface Watcher extends NodeJS.EventEmitter {
 export const notifyClose = new EventEmitter();
 
 function createWindow(conf: NirvanaConfig, idx: number, filePatternsToWatch: string[]) {
-  const { windowOption, watch, contextFile, browserNoActivityTimout } = conf;
+  const { windowOption, watch, contextFile, browserNoActivityTimeout } = conf;
   let started = false;
   let position: { x?: number; y?: number } = { };
   const positionFile = path.join(app.getPath("userData"), `position_${idx}.json`);
@@ -47,7 +47,7 @@ function createWindow(conf: NirvanaConfig, idx: number, filePatternsToWatch: str
           },
         });
         const id = win.id;
-        if (!watch && browserNoActivityTimout > 0) {
+        if (!watch && browserNoActivityTimeout > 0) {
           createTimer(id, () => {
             logger.verbose(`window-${id} close via no activity timeout`);
             notifyClose.emit("close", id, 0);

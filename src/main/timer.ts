@@ -8,19 +8,19 @@ export interface Timer {
 function createTimerInternal(cb: Function, conf: NirvanaConfig) {
 
   function afterNoActivity() {
-    setTimeout(() =>cb(), conf.browserNoActivityTimout);
+    setTimeout(() =>cb(), conf.browserNoActivityTimeout);
   }
 
   let natId: NodeJS.Timer;
 
   const t = {
     start: () => {
-      natId = setTimeout(() => afterNoActivity(), conf.browserNoActivityTimout);
+      natId = setTimeout(() => afterNoActivity(), conf.browserNoActivityTimeout);
       return t;
     },
     tick: () => {
       if (natId) clearTimeout(natId);
-      natId = setTimeout(afterNoActivity, conf.browserNoActivityTimout);
+      natId = setTimeout(afterNoActivity, conf.browserNoActivityTimeout);
       return t;
     },
   };

@@ -5,7 +5,7 @@ module.exports = {
   watch: false,                       // Watch script files and reload window when they are changed.
   concurrency: 4,                     // How many windows Nirvana launches in parallel.
   captureConsole: true,               // Whether to capture logging message in browser.
-  // browserNoActivityTimout: 2000,   // Time period to close window [msec]. If you not want timeout closing, set zero.
+  // browserNoActivityTimeout: 2000,   // Time period to close window [msec]. If you not want timeout closing, set zero.
   // contextFile: "my-context.html", // HTML context file.
   
   // Electron BrowserWindow constructor option

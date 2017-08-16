@@ -69,7 +69,7 @@ module.exports = {
   watch: false,                       // Watch script files and reload window when they are changed.
   concurrency: 4,                     // How many windows Nirvana launches in parallel.
   captureConsole: true,               // Whether to capture logging message in browser.
-  // browserNoActivityTimout: 2000,   // Time period to close window [msec]. If you not want timeout closing, set zero.
+  // browserNoActivityTimeout: 2000,   // Time period to close window [msec]. If you not want timeout closing, set zero.
   // contextFile: "my-context.html",  // HTML context file.
   
   // Electron BrowserWindow constructor option
@@ -155,7 +155,7 @@ Captures a snapshot of the current window.
 
 ### Tips
 #### When is browserWindow closed ?
-By default, nirvana-js's main process is capturing browser windows' logging events. And if no logging event occurs for a certain period of time(specified `browserNoActivityTimout`), the main process closes the browser window. If you want to suppress timeout closing, set `--no-timeout` CLI option. Or set `0` to `browserNoActivityTimout` in nivana.conf.js.
+By default, nirvana-js's main process is capturing browser windows' logging events. And if no logging event occurs for a certain period of time(specified `browserNoActivityTimeout`), the main process closes the browser window. If you want to suppress timeout closing, set `--no-timeout` CLI option. Or set `0` to `browserNoActivityTimeout` in nivana.conf.js.
 
 If you want to close browserWindows manually, you should call the `exit` function included [client library](#export-declare-function-exitcode-number-void).
 
