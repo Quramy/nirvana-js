@@ -1,10 +1,9 @@
 # ![Nirvana](./logo.png)
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Quramy/nirvana-js.svg)](https://greenkeeper.io/)
-
 [![CircleCI](https://circleci.com/gh/Quramy/nirvana-js.svg?style=svg)](https://circleci.com/gh/Quramy/nirvana-js)
 [![npm version](https://badge.fury.io/js/nirvana-js.svg)](https://badge.fury.io/js/nirvana-js)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Quramy/nirvana-js/master/LICENSE)
+[![Greenkeeper badge](https://badges.greenkeeper.io/Quramy/nirvana-js.svg)](https://greenkeeper.io/)
 
 JavaScript runner using Electron. It provides easy DOM manipulation with Node.js scripting :space_invader:.
 
