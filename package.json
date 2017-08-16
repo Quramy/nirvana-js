@@ -26,6 +26,7 @@
     "yargs": "^8.0.2"
   },
   "devDependencies": {
+    "@azu/docco": "^0.7.2",
     "@types/chalk": "^0.4.31",
     "@types/lodash": "^4.14.72",
     "@types/mkdirp": "^0.5.0",

@@ -1,0 +1,56 @@
+# <%= title.replace(".d.ts", "") %>
+<!-- THIS DOCUMENT IS AUTOMATICALLY GENERATED FROM src/*.ts -->
+<!-- Please edit src/*.ts and `npm run build:docs:api` -->
+<%
+function shouldIgnoreSection(section) {
+   if (/^\s*$/.test(section.docsText)) { return true; }
+   if (/^\s*$/.test(section.codeText)) { return true; }
+   // private method
+   if (/private /.test(section.codeText)) { return true; }
+   // @private
+   if (/<b>private<\/b>/.test(section.docsText)) { return true; }
+   // **internal** flag
+   if (/\*\*internal\*\*/.test(section.docsText)) { return true; }
+   if (/<reference type/.test(section.docsText)) { return true; }
+   return false;
+}
+function stripIndent(str) {
+   const match = str.match(/^[ \t]*(?=\S)/gm);
+
+   if (!match) {
+       return str;
+   }
+
+   const indent = Math.min(...match.map(x => x.length));
+   const re = new RegExp(`^[ \\t]{${indent}}`, 'gm');
+
+   return indent > 0 ? str.replace(re, "") : str;
+};
+// Multiple line or Single Header
+function renderAPIHeader(section) {
+   // remove } block
+   const header = stripIndent(section.codeText.replace(/}$/m, "")).trim();
+   if(header.split("\n").length > 1){
+     return "### Interface of \n"
+      + "```typescript\n"
+      + header + "\n"
+      + "```";
+   }
+   return "#### `" + header + "`";
+}
+%>
+
+### Interface
+
+```typescript
+<%= sections.filter(section => !shouldIgnoreSection(section)).map(section => section.codeText).join("\n").trim() %>
+```
+
+----
+<% sections.filter(section => !shouldIgnoreSection(section)).forEach(section => { %>
+<%= renderAPIHeader(section) %>
+
+<%= section.docsText %>
+
+----
+<% }) %>
