@@ -3,21 +3,24 @@ import * as fs from "fs";
 import { spawn } from "child_process";
 import * as yargs from "yargs";
 import * as chalk from "chalk";
+import { MainProcessOptions } from "../types/config";
 const cpf = require("cp-file");
 
-function bootstrap(electronOpt: any) {
-  const electronPath: string = (require("electron") as any);
-  const optArgStr = JSON.stringify(electronOpt);
-  const p = spawn(electronPath, [path.resolve(__dirname, "../main/index.js"), optArgStr], {
-    cwd: process.cwd(),
-    stdio: "inherit",
+export function bootstrap(cliOpt: Partial<MainProcessOptions>, cwd = process.cwd()) {
+  return new Promise((resolve, reject) => {
+    const electronPath: string = (require("electron") as any);
+    const optArgStr = JSON.stringify(cliOpt);
+    const p = spawn(electronPath, [path.resolve(__dirname, "../main/index.js"), optArgStr], {
+      cwd,
+      stdio: "inherit",
+    });
+    p.on("exit", (code) => resolve(code));
+    p.on("close", (code) => resolve(code));
+    p.on("error", err => reject(err));
   });
-  p.on("exit", (code) => process.exit(code));
-  p.on("close", (code) => process.exit(code));
-  p.on("error", err => console.error("An error occures on " + p.pid + ", " + err));
 }
 
-function main() {
+export function main() {
   yargs
     .usage("Usage: $0 [options] script_file ... script_file")
     .options("h", { alias: "help" })
@@ -42,8 +45,9 @@ function main() {
     });
     return;
   }
+  let p: Promise<number>;
   if (hasConf) {
-    bootstrap({
+    p = bootstrap({
       target,
       configFileName,
       ...yargs.argv,
@@ -53,11 +57,13 @@ function main() {
       yargs.showHelp();
       return;
     }
-    bootstrap({
+    p = bootstrap({
       target,
       ...yargs.argv,
     });
   }
+  p.catch((reason: any) => {
+    console.error("An error occures", reason);
+    return 1;
+  }).then(code => process.exit(code));
 }
-
-main();

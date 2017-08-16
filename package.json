@@ -32,7 +32,10 @@
     "@types/mkdirp": "^0.5.0",
     "@types/node": "^8.0.20",
     "@types/yargs": "^8.0.2",
+    "ava": "^0.22.0",
     "electron": "^1.7.5",
+    "jasmine-core": "^2.7.0",
+    "jasmine-reporters": "^2.2.1",
     "typescript": "2.3.4"
   }
 }

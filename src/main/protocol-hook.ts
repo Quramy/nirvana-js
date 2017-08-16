@@ -4,11 +4,11 @@ import { protocol } from "electron";
 
 export function registerProtocolHook(targetFiles: string[], fixuteFileName: string) {
   function protocolHook(targetFiles: string[]) {
-    protocol.interceptStringProtocol("file", (request: Electron.InterceptStringProtocolRequest, cb) => {
+    protocol.interceptBufferProtocol("file", (request: Electron.InterceptStringProtocolRequest, cb) => {
       const parsedUrl = parse(request.url);
       const fname = url2mapper(parsedUrl);
       if (!fname) return cb();
-      fs.readFile(fname, "utf-8", (error, data) => {
+      fs.readFile(fname, (error, buf) => {
         if (error) return (cb as any)(error.errno);
         if (fname === fixuteFileName) {
           const tmp = (<string>parsedUrl.query).split("&").map(c => {
@@ -17,10 +17,10 @@ export function registerProtocolHook(targetFiles: string[], fixuteFileName: stri
           }).find(p => p.key === "__nirvana_index__");
           if (tmp) {
             const index = +tmp.value;
-            data = injectScript(data, [targetFiles[index]]);
+            buf = new Buffer(injectScript(buf.toString("utf-8"), [targetFiles[index]]));
           }
         }
-        cb(data);
+        cb(buf);
       })
     });
   }
