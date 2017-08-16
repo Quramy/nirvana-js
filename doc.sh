@@ -13,9 +13,30 @@ function addDoc(){
 # npm run build
 # update
 addDoc "${srcDir}/renderer/client-fns.d.ts"
-# addDoc "${srcDir}/Dispatcher.d.ts"
-# addDoc "${srcDir}/DispatcherPayloadMeta.d.ts"
-# addDoc "${srcDir}/Store.d.ts"
-# addDoc "${srcDir}/UILayer/StoreGroup.d.ts"
-# addDoc "${srcDir}/UseCase.d.ts"
-# addDoc "${srcDir}/UseCaseContext.d.ts"
+
+cat << JS | node
+const fs = require("fs");
+const readme = fs.readFileSync("README.md", "utf-8");
+const doc = fs.readFileSync("__obj/docs/lib-renderer-client-fns.d.html", "utf-8");
+
+let ret = [];
+let inDoc = false;
+readme.split("\n").forEach(line => {
+  if (line === "<!-- doc -->") {
+    inDoc = true;
+    ret.push(line);
+    ret = [...ret, ...doc.split("\n")];
+  }
+  
+  if (line === "<!-- end:doc -->") {
+    inDoc = false;
+  }
+  
+  if (!inDoc) {
+    ret.push(line);
+  }
+});
+
+fs.writeFileSync("README.md", ret.join("\n"), "utf-8");
+
+JS
