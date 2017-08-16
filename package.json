@@ -5,13 +5,13 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "bin": {
-    "nirvana": "bin/cli.js",
-    "reg": "reg-suit run"
+    "nirvana": "bin/cli.js"
   },
   "scripts": {
     "test": "ava",
     "watch": "tsc -w",
-    "prepublish": "tsc -p ."
+    "prepublish": "tsc -p .",
+    "reg": "reg-suit run"
   },
   "author": "quramy",
   "license": "MIT",
