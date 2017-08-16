@@ -2,8 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/Quramy/nirvana-js.svg?style=svg)](https://circleci.com/gh/Quramy/nirvana-js)
 [![npm version](https://badge.fury.io/js/nirvana-js.svg)](https://badge.fury.io/js/nirvana-js)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Quramy/nirvana-js/master/LICENSE)
 [![Greenkeeper badge](https://badges.greenkeeper.io/Quramy/nirvana-js.svg)](https://greenkeeper.io/)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Quramy/nirvana-js/master/LICENSE)
 
 JavaScript runner using Electron. It provides easy DOM manipulation with Node.js scripting :space_invader:.
 
@@ -52,20 +52,37 @@ nirvana [option] your-javascript.js [script2 script3 ...]
 - `v`, `verbose`: Display debug logging messages.
 - `q`, `quiet` : Suppress logging messages.
 - `init` : Generate configuration file.
-- `show` : Whether to desplay browser windows. Default `false`.
-- `concurrency` : How many windows Nirvana launches in parallel. Default `4`.
-- `capture-console` : Whether to capture logging message in browser. Default: `true`.
+- `show` : Whether to desplay browser windows.
 - `custom-context-file`: HTML context file path.
+- `concurrency` : How many windows Nirvana launches in parallel. Default `4`.
+- `no-capture-console` : Suppress to capture logging message in browser.
+- `no-timeout` : Suppress closing browser window via timeout.
 
 ### Configuration File
-
-You can configure nirvana-js using a configuration JavaScript file such as:
+You can configure nirvana-js using a configuration JavaScript file. Executing `nirvana --init` the configuration file `nirvana.conf.js` is created. For example:
 
 ```js
+'use strict';
+
 module.exports = {
-  show: true,
-  watch: true,
-  customContextFile: "my-context.html"
+  // scripts: ["a.js", "b.js"],       // Script files to run. Also glob syntax is available e.g. "*.spec.js"
+  watch: false,                       // Watch script files and reload window when they are changed.
+  concurrency: 4,                     // How many windows Nirvana launches in parallel.
+  captureConsole: true,               // Whether to capture logging message in browser.
+  // browserNoActivityTimout: 2000,   // Time period to close window [msec]. If you not want timeout closing, set zero.
+  // contextFile: "my-context.html",  // HTML context file.
+  
+  // Electron BrowserWindow constructor option
+  // If you want detail see https://electron.atom.io/docs/api/browser-window/#new-browserwindowoptions.
+  windowOption: {
+    show: false,
+    width: 800,
+    height: 600,
+    webPreferences: {
+      // If you use custom preload script, load 'nirvana-js/preload' in your preload script.
+      // preload: 'preload.js'
+    },
+  },
 };
 ```
 
@@ -73,13 +90,14 @@ module.exports = {
 In scripts to run on nirvana-js, some utility functions are available. For example:
 
 ```js
-const { screenshot } from 'nirvana-js';
+const { screenshot } = require('nirvana-js');
 
 function yourFunc() {
   doSomething();
   screenshot('my-capture.png');
 }
 ```
+
 <!-- doc -->
 <!-- THIS DOCUMENT IS AUTOMATICALLY GENERATED FROM src/*.ts -->
 <!-- Please edit src/*.ts and `npm run build:docs:api` -->
@@ -91,7 +109,7 @@ function yourFunc() {
 export declare function isNirvana(): boolean;
 export declare function getCurrentWindow(): Electron.BrowserWindow | undefined;
 export declare function exit(code?: number): void;
-export declare function screenshot(fname: string): Promise<undefined>;
+export declare function screenshot(fname: string): Promise<void>;
 ```
 
 
@@ -122,7 +140,7 @@ Close the current browser process immediately.
 <b>param</b> code: Exit code.
 
 
-#### `export declare function screenshot(fname: string): Promise<undefined>;`
+#### `export declare function screenshot(fname: string): Promise<void>;`
 
 
 
@@ -134,6 +152,15 @@ Captures a snapshot of the current window.
 
 
 <!-- end:doc -->
+
+### Tips
+#### When is browserWindow closed ?
+By default, nirvana-js's main process is capturing browser windows' logging events. And if no logging event occurs for a certain period of time(specified `browserNoActivityTimout`), the main process closes the browser window. If you want to suppress timeout closing, set `--no-timeout` CLI option. Or set `0` to `browserNoActivityTimout` in nivana.conf.js.
+
+If you want to close browserWindows manually, you should call the `exit` function included [client library](#export-declare-function-exitcode-number-void).
+
+#### How to run testing framework ?
+It's so easy. See example/jasmine .
 
 ## License
 MIT. See license file under this repository.
