@@ -1,6 +1,6 @@
 export class Logger {
 
-  level: "verbose" | "normal" | "silent" = "normal";
+  level: "verbose" | "info" | "silent" = "info";
 
   verbose(...args: any[]) {
     if (this.level === "verbose") console.log.apply(console, args);

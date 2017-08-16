@@ -23,6 +23,8 @@ nirvana [option] your-javascript.js [script2 script3 ...]
 - `c`, `config` : Configuration file path. See [Configuration File](#configuration-file) section at the below.
 - `b`, `base-path` : The root path location to be used to resolve from.
 - `w`, `watch` : Watch script files and reload window when they are changed.
+- `v`, `verbose`: Display debug logging messages.
+- `q`, `quiet` : Suppress logging messages.
 - `init` : Generate configuration file.
 - `show` : Whether to desplay browser windows. Default `false`.
 - `concurrency` : How many windows Nirvana launches in parallel. Default `4`.

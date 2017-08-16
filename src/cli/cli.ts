@@ -27,12 +27,13 @@ export function main() {
     .options("c", { alias: "config", desc: "Configuration file path.", string: true })
     .options("b", { alias: "base-path", desc: "The root path location to be used to resolve from.", string: true })
     .options("w", { alias: "watch", desc: "Watch script files and reload window when they are changed.", boolean: true, default: false })
+    .options("v", { alias: "verbose", desc: "Display debug logging messages.", boolean: true, default: false })
+    .options("q", { alias: "quiet", desc: "Suppress logging messages.", boolean: true, default: false })
     .options("init", { desc: "Generate configuration file.", boolean: true })
     .options("show", { desc: "Whether to desplay browser windows." , boolean: true, default: false })
     .options("concurrency", { desc: "How many windows Nirvana launches in parallel." , number: true, default: 4 })
     .options("capture-console", { desc: "Whether to capture logging message in browser.." , boolean: true, default: true })
     .options("custom-context-file", { desc: "HTML context file.", string: true })
-    .options("verbose", { desc: "Display debug logging messages.", string: true, default: false })
   ;
   const configFileName = yargs.argv.config || "nirvana.conf.js";
   const target = yargs.argv._;

@@ -35,7 +35,7 @@ export function registerLogging() {
     if (args.id) tick(args.id);
     if (!t || !console[t]) return;
     const targets = args.rawArg.map(x => colMap(t)(x.toString()));
-    ((logger as any)[t] as Function).apply(console, [`[Log from window-${args.id}]`, ...targets]);
+    ((logger as any)[t] as Function).apply(logger, [`[Log from window-${args.id}]`, ...targets]);
   });
 
   ipcMain.on("error", (e: Electron.IpcMessageEvent, args: ErrorEventArgs) => {

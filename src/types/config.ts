@@ -8,6 +8,7 @@ export interface MainProcessOptions {
   concurrency?: number;
   customContextFile?: string;
   verbose?: boolean;
+  quiet?: boolean;
 }
 
 export interface NirvanaConfigObject {
@@ -24,7 +25,7 @@ export interface NirvanaConfigObject {
     show: boolean;
     webPreferences: any;
   }
-  verbose: boolean;
+  loglevel: "verbose" | "info" | "silent";
 }
 
 export interface NirvanaConfig extends NirvanaConfigObject {

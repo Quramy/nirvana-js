@@ -27,7 +27,13 @@ function createConfigObj(opt: MainProcessOptions, baseConf: NirvanaConfig): Nirv
   if (!!opt.watch) ret.watch = true;
   opt.basePath = basePath;
   if (opt.show) ret.windowOption.show = true;
-  if (opt.verbose) ret.verbose = true;
+  if (opt.verbose) {
+    ret.loglevel = "verbose";
+  } else if (opt.quiet) {
+    ret.loglevel = "silent";
+  } else {
+    ret.loglevel = "info";
+  }
   return ret;
 }
 
@@ -45,7 +51,7 @@ const defaultConfig: NirvanaConfig = {
     show: false,
     webPreferences: { },
   },
-  verbose: false,
+  loglevel: "info",
 };
 
 function executeCustomConfigJS(scriptFilePath: string): Partial<NirvanaConfig> | undefined {
@@ -135,13 +141,13 @@ app.on("ready", () => {
   }
   const conf = createConfigObj(opt, confBase);
 
-  if (conf.verbose) logger.level = "verbose";
+  logger.level = conf.loglevel;
 
   if (!verifyConfig(conf)) {
     return process.exit(1);
   }
 
-  registerLogging();
+  if (conf.captureConsole) registerLogging();
 
   registerProtocolHook(conf);
 
