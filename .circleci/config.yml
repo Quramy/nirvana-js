@@ -36,3 +36,5 @@ jobs:
           yarn test
           xvfbd stop
 
+      - run: yarn run reg
+
