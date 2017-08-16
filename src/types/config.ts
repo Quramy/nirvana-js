@@ -4,7 +4,7 @@ export interface MainProcessOptions {
   show: boolean;
   watch: boolean;
   basePath?: string;
-  captureConsole?: boolean;
+  noCaptureConsole?: boolean;
   concurrency?: number;
   customContextFile?: string;
   verbose?: boolean;

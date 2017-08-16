@@ -20,7 +20,7 @@
   },
   "ava": {
     "files": "lib/e2e/**/*.js",
-    "concurrency": 1
+    "concurrency": 2
   },
   "dependencies": {
     "chalk": "^2.1.0",

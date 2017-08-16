@@ -10,7 +10,7 @@ export function registerProtocolHook(conf: NirvanaConfig) {
     protocol.interceptBufferProtocol("file", (request: Electron.InterceptStringProtocolRequest, cb) => {
       const parsedUrl = parse(request.url);
       const fname = url2mapper(parsedUrl);
-      logger.verbose(request);
+      logger.verbose("Capture buffer request", request.url);
       if (!fname) return cb();
       fs.readFile(fname, (error, buf) => {
         if (error) return (cb as any)(error.errno);
@@ -30,6 +30,7 @@ export function registerProtocolHook(conf: NirvanaConfig) {
   }
 
   function injectScript(html: string, targetScripts: string[]) {
+    logger.verbose("Inject scripts into context HTML", targetScripts);
     return html.replace(/<\/body>/g, (a, b, c) => {
       return targetScripts.map(name => `<script>require("${name}")</script>`).join("\n") + "</body>";
     });

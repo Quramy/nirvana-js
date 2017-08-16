@@ -30,9 +30,9 @@ export function main() {
     .options("v", { alias: "verbose", desc: "Display debug logging messages.", boolean: true, default: false })
     .options("q", { alias: "quiet", desc: "Suppress logging messages.", boolean: true, default: false })
     .options("init", { desc: "Generate configuration file.", boolean: true })
-    .options("show", { desc: "Whether to desplay browser windows." , boolean: true, default: false })
-    .options("concurrency", { desc: "How many windows Nirvana launches in parallel." , number: true, default: 4 })
-    .options("capture-console", { desc: "Whether to capture logging message in browser.." , boolean: true, default: true })
+    .options("show", { desc: "Whether to desplay browser windows.", boolean: true, default: false })
+    .options("concurrency", { desc: "How many windows Nirvana launches in parallel.", number: true, default: 4 })
+    .options("no-capture-console", { alias: "no-capture-console", desc: "Suppress to capture logging message in browser.", boolean: true })
     .options("custom-context-file", { desc: "HTML context file.", string: true })
   ;
   const configFileName = yargs.argv.config || "nirvana.conf.js";

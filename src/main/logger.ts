@@ -3,7 +3,7 @@ export class Logger {
   level: "verbose" | "info" | "silent" = "info";
 
   verbose(...args: any[]) {
-    if (this.level === "verbose") console.log.apply(console, args);
+    if (this.level === "verbose") console.log.apply(console, ["[Debug nirvana-main]", ...args]);
   }
 
   debug(...args: any[]) {
