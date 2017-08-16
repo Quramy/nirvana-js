@@ -16,8 +16,8 @@ addDoc "${srcDir}/renderer/client-fns.d.ts"
 
 cat << JS | node
 const fs = require("fs");
-const readme = fs.readFileSync("README.md", "utf-8");
-const doc = fs.readFileSync("__obj/docs/lib-renderer-client-fns.d.html", "utf-8");
+const readme = fs.readFileSync("$projectDir/README.md", "utf-8");
+const doc = fs.readFileSync("$projectDir/__obj/docs/lib-renderer-client-fns.d.html", "utf-8");
 
 let ret = [];
 let inDoc = false;
@@ -37,6 +37,6 @@ readme.split("\n").forEach(line => {
   }
 });
 
-fs.writeFileSync("README.md", ret.join("\n"), "utf-8");
+fs.writeFileSync("$projectDir/README.md", ret.join("\n"), "utf-8");
 
 JS
