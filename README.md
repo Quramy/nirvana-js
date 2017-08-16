@@ -1,4 +1,4 @@
-# Nirvana
+# ![Nirvana](./logo.png)
 JavaScript runner using Electron.
 
 ## Install
@@ -32,4 +32,4 @@ nirvana --concurrency 2 script1.js script2.js script3.js
 ```
 
 ## License
-MIT
+MIT. See license file under this repository.
