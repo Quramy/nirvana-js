@@ -47,6 +47,7 @@ nirvana [option] your-javascript.js [script2 script3 ...]
 ### CLI Options
 
 - `c`, `config` : Configuration file path. See [Configuration File](#configuration-file) section at the below.
+- `d`, `debug` : Run debug mode. It's equivalent to `--watch --show`.
 - `b`, `base-path` : The root path location to be used to resolve from.
 - `w`, `watch` : Watch script files and reload window when they are changed.
 - `v`, `verbose`: Display debug logging messages.
@@ -55,8 +56,8 @@ nirvana [option] your-javascript.js [script2 script3 ...]
 - `show` : Whether to desplay browser windows.
 - `custom-context-file`: HTML context file path.
 - `concurrency` : How many windows Nirvana launches in parallel. Default `4`.
-- `no-capture-console` : Suppress to capture logging message in browser.
-- `no-timeout` : Suppress closing browser window via timeout.
+- `noCaptureConsole` : Suppress to capture logging message in browser.
+- `noTimeout` : Suppress closing browser window via timeout.
 
 ### Configuration File
 You can configure nirvana-js using a configuration JavaScript file. Executing `nirvana --init` the configuration file `nirvana.conf.js` is created. For example:
@@ -161,6 +162,9 @@ If you want to close browserWindows manually, you should call the `exit` functio
 
 #### How to run testing framework ?
 It's so easy. See example/jasmine .
+
+#### Capture CPU profile of Node.js script
+Run with `--debug` and launch Chrome's devtools in the window, you can capture CPU profile or performance timeline of your Node.js script.
 
 ## License
 MIT. See license file under this repository.

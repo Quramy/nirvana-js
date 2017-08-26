@@ -25,6 +25,7 @@ export function main() {
     .usage("Usage: $0 [options] script_file ... script_file")
     .options("h", { alias: "help" })
     .options("c", { alias: "config", desc: "Configuration file path.", string: true })
+    .options("d", { alias: "debug", desc: "Run debug mode. It's equivalent to '--watch --show'.", boolean: true, default: false })
     .options("b", { alias: "base-path", desc: "The root path location to be used to resolve from.", string: true })
     .options("w", { alias: "watch", desc: "Watch script files and reload window when they are changed.", boolean: true, default: false })
     .options("v", { alias: "verbose", desc: "Display debug logging messages.", boolean: true, default: false })
@@ -32,9 +33,9 @@ export function main() {
     .options("init", { desc: "Generate configuration file.", boolean: true })
     .options("show", { desc: "Whether to desplay browser windows.", boolean: true, default: false })
     .options("concurrency", { desc: "How many windows Nirvana launches in parallel.", number: true, default: 4 })
-    .options("no-timeout", { desc: "Suppress closing browser window via timeout.", boolean: true, default: false })
-    .options("no-capture-console", { desc: "Suppress to capture logging message in browser.", boolean: true, default: false })
     .options("custom-context-file", { desc: "HTML context file.", string: true })
+    .options("noTimeout", { desc: "Suppress closing browser window via timeout.", boolean: true, default: false })
+    .options("noCaptureConsole", { desc: "Suppress to capture logging message in browser.", boolean: true, default: false })
   ;
   const configFileName = yargs.argv.config || "nirvana.conf.js";
   const target = yargs.argv._;
@@ -48,12 +49,20 @@ export function main() {
     });
     return;
   }
+  const argv = {
+    ...yargs.argv,
+    noTimeout: yargs.argv["no-timeout"],
+  } as Partial<MainProcessOptions>;
+  if (yargs.argv.debug) {
+    argv.show = true;
+    argv.watch = true;
+  }
   let p: Promise<number>;
   if (hasConf) {
     p = bootstrap({
       target,
       configFileName,
-      ...yargs.argv,
+      ...argv,
     } as any);
   } else {
     if (!target || !target.length) {
@@ -62,7 +71,7 @@ export function main() {
     }
     p = bootstrap({
       target,
-      ...yargs.argv,
+      ...argv,
     } as any);
   }
   p.catch((reason: any) => {
