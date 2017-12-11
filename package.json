@@ -48,14 +48,14 @@
     "@types/node": "^8.0.22",
     "@types/rimraf": "^2.0.1",
     "@types/yargs": "^8.0.2",
-    "ava": "^0.23.0",
+    "ava": "^0.24.0",
     "electron": "^1.7.5",
     "jasmine-core": "^2.7.0",
     "jasmine-reporters": "^2.2.1",
     "reg-keygen-git-hash-plugin": "^0.5.1",
     "reg-notify-github-plugin": "^0.5.1",
     "reg-publish-s3-plugin": "^0.6.0",
-    "reg-suit": "^0.5.1",
+    "reg-suit": "^0.6.0",
     "rimraf": "^2.6.1",
     "typescript": "2.5.2"
   }
