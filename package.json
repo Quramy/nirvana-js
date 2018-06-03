@@ -57,6 +57,6 @@
     "reg-publish-s3-plugin": "^0.6.0",
     "reg-suit": "^0.6.0",
     "rimraf": "^2.6.1",
-    "typescript": "2.5.2"
+    "typescript": "2.5.3"
   }
 }
