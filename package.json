@@ -43,7 +43,7 @@
     "@azu/docco": "^0.7.2",
     "@types/chalk": "^0.4.31",
     "@types/glob": "^5.0.31",
-    "@types/lodash": "^4.14.73",
+    "@types/lodash": "4.14.116",
     "@types/mkdirp": "^0.5.0",
     "@types/node": "^8.0.22",
     "@types/rimraf": "^2.0.1",
