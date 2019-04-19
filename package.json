@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "chalk": "^2.1.0",
-    "cp-file": "^6.0.0",
+    "cp-file": "^7.0.0",
     "gaze": "^1.1.2",
     "glob": "^7.1.2",
     "lodash": "^4.17.4",
