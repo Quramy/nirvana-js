@@ -45,7 +45,7 @@
     "@types/glob": "^5.0.31",
     "@types/lodash": "^4.14.73",
     "@types/mkdirp": "^0.5.0",
-    "@types/node": "^8.0.22",
+    "@types/node": "^12.6.3",
     "@types/rimraf": "^2.0.1",
     "@types/yargs": "^11.0.0",
     "ava": "^0.24.0",
