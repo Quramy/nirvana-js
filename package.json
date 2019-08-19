@@ -37,7 +37,7 @@
     "glob": "^7.1.2",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
-    "yargs": "^9.0.1"
+    "yargs": "^14.0.0"
   },
   "devDependencies": {
     "@azu/docco": "^0.7.2",
