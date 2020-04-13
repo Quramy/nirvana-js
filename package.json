@@ -48,7 +48,7 @@
     "@types/node": "^8.0.22",
     "@types/rimraf": "^2.0.1",
     "@types/yargs": "^11.0.0",
-    "ava": "^0.24.0",
+    "ava": "^3.7.0",
     "electron": "^1.7.5",
     "jasmine-core": "^3.0.0",
     "jasmine-reporters": "^2.2.1",
